@@ -175,6 +175,7 @@ Rules:
 - Ensure images are suitable for HR presentations, recruitment campaigns, internal training, or employee engagement material.
 - Stay true to the user’s intent but emphasize people, culture, and workplace positivity.
 - Output only the final refined image prompt.
+- Do not leave any details from the user's prompt
 
 User’s raw prompt:
 "{USER_PROMPT}"
