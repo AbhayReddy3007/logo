@@ -40,18 +40,17 @@ safe_init_session()
 
 # ----------------- Embedded logo config -----------------
 # Change this path to the logo file you want embedded into the app.
-# This should be a PNG (preferably with transparency).
+# Preferably PNG with transparency.
 LOGO_PATH = "Dr._Reddy's_Laboratories_logo.svg.png"  # <- update if needed
 
 def load_embedded_logo(path=LOGO_PATH):
     try:
         with open(path, "rb") as f:
             data = f.read()
-            # ensure valid image
+            # validate it can be opened by PIL
             Image.open(BytesIO(data)).convert("RGBA")
             return data
-    except Exception as e:
-        # no logo found or invalid
+    except Exception:
         return None
 
 EMBEDDED_LOGO_BYTES = load_embedded_logo()
@@ -161,7 +160,6 @@ User’s raw prompt:
 
 Refined DPEX image prompt:
 """,
-
     "HR": """
 You are a senior AI prompt engineer creating refined prompts for human resources and workplace-related visuals.
 
@@ -480,8 +478,8 @@ Instructions:
 def run_logo_mode(prompt_text, logo_bytes, base_bytes=None, scale=0.15, opacity=0.9, placement_hint=""):
     """
     Use Nano Banana to either:
-     - Generate a new image that includes the provided logo, or
-     - Composite the logo onto the provided base image.
+     - Composite the provided logo onto the provided base image (preferred), or
+     - Generate a new image that includes the provided logo if no base image is given.
     Returns bytes or None.
     """
     if not VERTEX_AVAILABLE:
@@ -502,27 +500,44 @@ def run_logo_mode(prompt_text, logo_bytes, base_bytes=None, scale=0.15, opacity=
         st.warning("Nano Banana editor model unavailable.")
         return None
 
-    # Compose a targeted instruction describing logo placement
-    
-    # scale and opacity guidance included in the instruction so model can size/blend the logo
+    # sanitize/prepare placement text
+    placement_text = f"Placement hint: {placement_hint}." if placement_hint else "Placement hint: place logo where requested in the prompt."
+
+    # Make instruction explicit that the logo must be composited into the provided base image
     instruction = f"""
 You are a professional image compositor and editor.
 Task:
-- Use the provided logo (inline) and place it into the image as the user requests.
-- User instruction / scene prompt: "{prompt_text}"
+- Composite the provided logo (inline) into the given base image exactly as requested by the user.
+- User scene / requirement: "{prompt_text}"
 - {placement_text}
-- Place the logo at approximately {int(scale*100)}% of the image width (maintain aspect ratio), apply opacity {opacity:.2f}, and blend it naturally with the scene lighting and perspective.
-- If a base image is provided, composite the logo into that base image; otherwise, generate a new photorealistic image that matches the user prompt and includes the logo in the requested position.
-- Return only the final image inline (PNG). Do not include any extra text.
+- Place the logo at approximately {int(scale*100)}% of the image width (maintain aspect ratio), apply opacity {opacity:.2f}, 
+  and blend it naturally with the scene lighting and perspective. Do not re-generate the whole scene — use the base image as the main canvas.
+- If no base image is provided, generate a new photorealistic image that matches the user prompt and includes the logo in the requested position.
+- Return only the final PNG image as inline image data. Do not include extra text or captions.
 """
 
+    # Ensure logo is a PNG-like part (Gemini will accept inline data)
+    try:
+        logo_part = Part.from_data(mime_type="image/png", data=logo_bytes)
+    except Exception:
+        # fallback: try to convert to PNG bytes via PIL
+        try:
+            pil_logo = Image.open(BytesIO(logo_bytes)).convert("RGBA")
+            buf = BytesIO()
+            pil_logo.save(buf, format="PNG")
+            logo_bytes = buf.getvalue()
+            logo_part = Part.from_data(mime_type="image/png", data=logo_bytes)
+        except Exception as e:
+            st.error(f"Failed to prepare embedded logo: {e}")
+            return None
+
     parts = []
-    # if base image provided, include it first (so model treats it as the target canvas)
+    # include base first so model treats it as canvas (preferred compositing path)
     if base_bytes:
         parts.append(Part.from_data(mime_type="image/png", data=base_bytes))
-    # logo part always included
-    parts.append(Part.from_data(mime_type="image/png", data=logo_bytes))
-    # send instruction first so the model sees the textual guidance
+    parts.append(logo_part)
+
+    # send instruction then parts
     try:
         response = nano.generate_content([instruction] + parts)
     except Exception as e:
@@ -571,11 +586,16 @@ with left_col:
         st.error("Embedded logo not found at LOGO_PATH. Please update LOGO_PATH or put the logo file there.")
         logo_mode = False
 
+    # default placement_hint to empty string to avoid later undefined variable if logo_mode is False
+    placement_hint = ""
+
     if logo_mode:
         st.markdown("**Logo settings (embedded logo)**")
-        
+        # let user describe exactly where to put the logo on the uploaded image
+        placement_hint = st.text_input("Placement hint (e.g. top-left, bottom-right, on car door, top-center)", value="top-left")
+        # fixed small defaults — you can change these to sliders if you want
         scale = 8
-        opacity = 1
+        opacity = 1.0
         # convert to fractions used by instruction
         scale_frac = scale / 100.0
 
@@ -666,7 +686,7 @@ with left_col:
                             show_image_safe(edited, caption=f"Edited ({ts})")
 
                             # --------------------------
-                            # NEW: 3-column controls for current edited image: Download | Edit (load into editor) | Clear
+                            # 3-column controls for current edited image: Download | Edit (load into editor) | Clear
                             # --------------------------
                             current_name = os.path.basename(out_fn)
                             safe_key = hashlib.sha1(current_name.encode()).hexdigest()[:12]
@@ -807,8 +827,9 @@ with right_col:
 
     max_it = 100
     st.session_state["max_edit_iterations"] = int(max_it)
- 
+
+    st.markdown("**Embedded logo status**")
     if EMBEDDED_LOGO_BYTES:
-        show_image_safe(EMBEDDED_LOGO_BYTES, caption="")
+        show_image_safe(EMBEDDED_LOGO_BYTES, caption="Embedded logo (used when Logo Mode enabled)")
     else:
         st.warning(f"No embedded logo found at '{LOGO_PATH}'. Update LOGO_PATH at top of file.")
