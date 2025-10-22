@@ -555,10 +555,10 @@ with left_col:
     scale_frac = 0.08
     opacity = 1.0
     if logo_mode:
-        st.markdown("**Logo overlay settings (post-generation)**")
+        st.markdown("Logo")
         placement_hint = st.text_input("Placement (top-left, top-right, bottom-left, bottom-right, center)", value="bottom-right")
         scale_percent = st.slider("Logo size (% of image width)", min_value=2, max_value=20, value=8)
-        opacity = st.slider("Logo opacity", min_value=0.0, max_value=1.0, value=1.0, step=0.05)
+        opacity = 1
         scale_frac = scale_percent / 100.0
                          
     num_images = 1
