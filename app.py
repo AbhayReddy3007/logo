@@ -738,6 +738,6 @@ with right_col:
 
     
     if EMBEDDED_LOGO_BYTES:
-        show_image_safe(EMBEDDED_LOGO_BYTES, caption="Embedded logo (post-generation)")
+        show_image_safe(EMBEDDED_LOGO_BYTES)
     else:
         st.warning(f"No embedded logo found at '{LOGO_PATH}'. Update LOGO_PATH at top of file.")
