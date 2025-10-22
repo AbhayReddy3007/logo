@@ -367,7 +367,7 @@ def get_text_model():
         return None
 
 # ---------------- Logo overlay helper (post-generation) ----------------
-def overlay_logo_on_image(image_bytes, logo_bytes, placement="bottom-right", scale=0.08, opacity=1.0):
+def overlay_logo_on_image(image_bytes, logo_bytes, placement="top-right", scale=0.08, opacity=1.0):
     """Deterministically overlay embedded logo onto image bytes and return new PNG bytes."""
     try:
         base = Image.open(BytesIO(image_bytes)).convert("RGBA")
