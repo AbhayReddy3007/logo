@@ -807,8 +807,8 @@ with right_col:
 
     max_it = 100
     st.session_state["max_edit_iterations"] = int(max_it)
-    st.markdown("**Embedded logo status**")
+ 
     if EMBEDDED_LOGO_BYTES:
-        show_image_safe(EMBEDDED_LOGO_BYTES, caption="Embedded logo (used when Logo Mode enabled)")
+        show_image_safe(EMBEDDED_LOGO_BYTES, caption="")
     else:
         st.warning(f"No embedded logo found at '{LOGO_PATH}'. Update LOGO_PATH at top of file.")
