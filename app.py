@@ -412,14 +412,14 @@ with left_col:
 
     prompt = st.text_area("Enter prompt", key="main_prompt", height=140, placeholder="")
     # Logo Mode toggle (uses embedded logo bytes)
-    logo_mode = st.checkbox("Enable Logo Mode (use embedded logo)", value=False)
+    logo_mode = st.checkbox("Add logo", value=False)
     if logo_mode and not EMBEDDED_LOGO_BYTES:
         st.error("Embedded logo not found at LOGO_PATH. Please update LOGO_PATH or put the logo file there.")
         logo_mode = False
 
     if logo_mode:
         st.markdown("**Logo settings (embedded logo)**")
-        placement_hint = st.text_input("Placement hint (e.g. bottom-right, on car door, top-left corner)", value="")
+        
         scale = 8
         opacity = 1
         # convert to fractions used by instruction
