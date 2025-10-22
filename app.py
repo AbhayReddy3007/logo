@@ -420,8 +420,8 @@ with left_col:
     if logo_mode:
         st.markdown("**Logo settings (embedded logo)**")
         placement_hint = st.text_input("Placement hint (e.g. bottom-right, on car door, top-left corner)", value="")
-        scale = st.slider("Logo scale (approx % of image width)", min_value=5, max_value=60, value=15)  # percent
-        opacity = st.slider("Logo opacity (0 fully transparent — 1 fully opaque)", min_value=0.0, max_value=1.0, value=0.95, step=0.01)
+        scale = 8
+        opacity = 1
         # convert to fractions used by instruction
         scale_frac = scale / 100.0
 
