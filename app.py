@@ -552,7 +552,7 @@ with left_col:
         st.error(f"Embedded logo not found at LOGO_PATH ('{LOGO_PATH}'). Update LOGO_PATH or add the file.")
         logo_mode = False
 
-    placement_hint = "bottom-right"
+    placement_hint = "top-right"
     scale_frac = 0.08
     opacity = 1.0
     if logo_mode:
