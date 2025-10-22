@@ -41,7 +41,7 @@ safe_init_session()
 # ----------------- Embedded logo config -----------------
 # Change this path to the logo file you want embedded into the app.
 # This should be a PNG (preferably with transparency).
-LOGO_PATH = "/mnt/data/gen_20251017_092702_0.png"  # <- update if needed
+LOGO_PATH = "Dr._Reddy's_Laboratories_logo.svg.png"  # <- update if needed
 
 def load_embedded_logo(path=LOGO_PATH):
     try:
