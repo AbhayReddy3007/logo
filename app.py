@@ -546,7 +546,7 @@ with left_col:
     prompt = st.text_area("Enter prompt", key="main_prompt", height=140, placeholder="")
     
     # --- NEW: Post-generation logo mode controls ---
-    logo_mode = st.checkbox("Add embedded logo after generation", value=False)
+    logo_mode = st.checkbox("Add logo", value=False)
     if logo_mode and not EMBEDDED_LOGO_BYTES:
         st.error(f"Embedded logo not found at LOGO_PATH ('{LOGO_PATH}'). Update LOGO_PATH or add the file.")
         logo_mode = False
