@@ -337,7 +337,7 @@ def get_imagen_model():
     if not VERTEX_AVAILABLE:
         return None
     try:
-        MODEL_CACHE["imagen"] = ImageGenerationModel.from_pretrained("imagen-4.0-ultra-generate-001")
+        MODEL_CACHE["imagen"] = ImageGenerationModel.from_pretrained("imagen-4.0-generate-001")
         return MODEL_CACHE["imagen"]
     except Exception as e:
         st.error(f"Failed to load Imagen model: {e}")
