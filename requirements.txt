@@ -1,0 +1,23 @@
+ streamlit==1.36.0
+Pillow==10.4.0
+requests==2.32.3
+streamlit
+google-generativeai
+requests
+python-pptx
+python-docx
+pillow
+PyMuPDF
+
+streamlit
+
+# Vertex AI SDK (must be 1.38.1+ for vertexai import to exist)
+google-cloud-aiplatform>=1.38.1
+
+# Auth libs
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+
+# Compatibility
+protobuf<5.0.0
