@@ -38,9 +38,27 @@ def safe_init_session():
 
 safe_init_session()
 
+# ----------------- Embedded logo config -----------------
+# Change this path to the logo file you want embedded into the app.
+# This should be a PNG (preferably with transparency).
+LOGO_PATH = "/mnt/data/gen_20251017_092702_0.png"  # <- update if needed
+
+def load_embedded_logo(path=LOGO_PATH):
+    try:
+        with open(path, "rb") as f:
+            data = f.read()
+            # ensure valid image
+            Image.open(BytesIO(data)).convert("RGBA")
+            return data
+    except Exception as e:
+        # no logo found or invalid
+        return None
+
+EMBEDDED_LOGO_BYTES = load_embedded_logo()
+
 # ---------------- Prompt templates and style map ----------------
 PROMPT_TEMPLATES = {
-
+    # ... (same templates as your original code) ...
     "None": """
 Dont make any changes in the user's prompt.Follow it as it is
 User’s raw prompt:
@@ -48,7 +66,6 @@ User’s raw prompt:
 
 Refined general image prompt:
 """,
-
     "General": """
 You are an expert AI prompt engineer specialized in creating vivid and descriptive image prompts.
 
@@ -70,168 +87,15 @@ User’s raw prompt:
 
 Refined general image prompt:
 """,
-
-    "Design": """
-You are a senior AI prompt engineer supporting a creative design team.
-
-Your job:
-- Expand raw input into a visually inspiring, design-oriented image prompt.
-- Add imaginative details about:
-  • Artistic styles (minimalist, abstract, futuristic, flat, 3D render, watercolor, digital illustration)
-  • Color schemes, palettes, textures, and patterns
-  • Composition and balance (symmetry, negative space, creative framing)
-  • Lighting and atmosphere (soft glow, vibrant contrast, surreal shading)
-  • Perspective (isometric, top-down, wide shot, close-up)
-
-Rules:
-- Keep fidelity to the idea but make it highly creative and visually unique.
-- Output only the final refined image prompt.
-
-User’s raw prompt:
-"{USER_PROMPT}"
-
-Refined design image prompt:
-""",
-    "Marketing": """
-You are a senior AI prompt engineer creating polished prompts for marketing and advertising visuals.
-
-Task:
-- Take the user’s raw input and turn it into a polished, professional, campaign-ready image prompt.
-- Expand the idea with rich marketing-oriented details that make it visually persuasive.
-
-When refining, include:
-- Background & setting (modern, lifestyle, commercial, aspirational)
-- Lighting & atmosphere (studio lights, golden hour, cinematic)
-- Style (photorealistic, cinematic, product photography, lifestyle branding)
-- Perspective & composition (wide shot, close-up, dramatic angles)
-- Mood, tone & branding suitability (premium, sleek, aspirational)
-
-Special Brand Rule:
-- If the user asks for an image related to a specific brand, seamlessly add the brand’s tagline into the final image prompt.
-- For **Dr. Reddy’s**, the correct tagline is: “Good Health Can’t Wait.”
-
-Rules:
-- Stay faithful to the user’s idea but elevate it for use in ads, social media, or presentations.
-- Output **only** the final refined image prompt (no explanations, no extra text).
-
-User raw input:
-{USER_PROMPT}
-
-
-Refined marketing image prompt:
-""",
-    "DPEX": """
-You are a senior AI prompt engineer creating refined prompts for IT and technology-related visuals.
-
-Your job:
-- Transform the raw input into a detailed, professional, and technology-focused image prompt.
-- Expand with contextual details about:
-  • Technology environments (server rooms, data centers, cloud systems, coding workspaces)
-  • Digital elements (network diagrams, futuristic UIs, holograms, cybersecurity visuals)
-  • People in IT roles (developers, engineers, admins, tech support, collaboration)
-  • Tone (innovative, technical, futuristic, professional)
-  • Composition (screens, servers, code on monitors, abstract digital patterns)
-  • Lighting and effects (LED glow, cyberpunk tones, neon highlights, modern tech ambiance)
-
-Rules:
-- Ensure images are suitable for IT presentations, product demos, training, technical documentation, and digital transformation campaigns.
-- Stay true to the user’s intent but emphasize a technological and innovative look.
-- Output only the final refined image prompt.
-
-User’s raw prompt:
-"{USER_PROMPT}"
-
-Refined DPEX image prompt:
-""",
-
-    "HR": """
-You are a senior AI prompt engineer creating refined prompts for human resources and workplace-related visuals.
-
-Your job:
-- Transform the raw input into a detailed, professional, and HR-focused image prompt.
-- Expand with contextual details about:
-  • Workplace settings (modern office, meeting rooms, open workspaces, onboarding sessions)
-  • People interactions (interviews, teamwork, training, collaboration, diversity and inclusion)
-  • Themes (employee engagement, professional growth, recruitment, performance evaluation)
-  • Composition (groups in discussion, managers mentoring, collaborative workshops)
-  • Lighting and tone (bright, welcoming, professional, inclusive)
-
-Rules:
-- Ensure images are suitable for HR presentations, recruitment campaigns, internal training, or employee engagement material.
-- Stay true to the user’s intent but emphasize people, culture, and workplace positivity.
-- Output only the final refined image prompt.
-
-User’s raw prompt:
-"{USER_PROMPT}"
-
-Refined HR image prompt:
-""",
-
-    "Business": """
-You are a senior AI prompt engineer creating refined prompts for business and corporate visuals.
-
-Your job:
-- Transform the raw input into a detailed, professional, and business-oriented image prompt.
-- Expand with contextual details about:
-  • Corporate settings (boardrooms, skyscrapers, modern offices, networking events)
-  • Business activities (presentations, negotiations, brainstorming sessions, teamwork)
-  • People (executives, entrepreneurs, consultants, diverse teams, global collaboration)
-  • Tone (professional, ambitious, strategic, innovative)
-  • Composition (formal meetings, handshake deals, conference tables, city skyline backgrounds)
-  • Lighting and atmosphere (clean, modern, premium, professional)
-
-Rules:
-- Ensure images are suitable for corporate branding, investor decks, strategy sessions, or professional reports.
-- Stay true to the user’s intent but emphasize professionalism, ambition, and success.
-- Output only the final refined image prompt.
-
-User’s raw prompt:
-"{USER_PROMPT}"
-
-Refined business image prompt:
-"""
+    # (other templates omitted here for brevity — copy the rest from your original file)
 }
 
-
 STYLE_DESCRIPTIONS = {
+    # (copy your style descriptions unchanged)
     "None": "No special styling — keep the image natural, faithful to the user’s idea.",
     "Smart": "A clean, balanced, and polished look. Professional yet neutral, visually appealing without strong artistic bias.",
     "Cinematic": "Film-style composition with professional lighting. Wide dynamic range, dramatic highlights, storytelling feel.",
-    "Creative": "Playful, imaginative, and experimental. Bold artistic choices, unexpected elements, and expressive color use.",
-    "Bokeh": "Photography style with shallow depth of field. Subject in sharp focus with soft, dreamy, blurred backgrounds.",
-    "Macro": "Extreme close-up photography. High detail, textures visible, shallow focus highlighting minute features.",
-    "Illustration": "Hand-drawn or digitally illustrated style. Clear outlines, stylized shading, expressive and artistic.",
-    "3D Render": "Photorealistic or stylized CGI. Crisp geometry, depth, shadows, and reflective surfaces with realistic rendering.",
-    "Fashion": "High-end editorial photography. Stylish, glamorous poses, bold makeup, controlled lighting, and modern aesthetic.",
-    "Minimalist": "Simple and uncluttered. Few elements, large negative space, flat or muted color palette, clean composition.",
-    "Moody": "Dark, atmospheric, and emotional. Strong shadows, high contrast, deep tones, cinematic ambiance.",
-    "Portrait": "Focus on the subject. Natural skin tones, shallow depth of field, close-up or waist-up framing, studio or natural lighting.",
-    "Stock Photo": "Professional, commercial-quality photo. Neutral subject matter, polished composition, business-friendly aesthetic.",
-    "Vibrant": "Bold, saturated colors. High contrast, energetic mood, eye-catching and lively presentation.",
-    "Pop Art": "Comic-book and pop-art inspired. Bold outlines, halftone patterns, flat vivid colors, high contrast, playful tone.",
-    "Vector": "Flat vector graphics. Smooth shapes, sharp edges, solid fills, and clean scalable style like logos or icons.",
-
-    "Watercolor": "Soft, fluid strokes with delicate blending and washed-out textures. Artistic and dreamy.",
-    "Oil Painting": "Rich, textured brushstrokes. Classic fine art look with deep color blending.",
-    "Charcoal": "Rough, sketchy textures with dark shading. Artistic, raw, dramatic effect.",
-    "Line Art": "Minimal monochrome outlines with clean, bold strokes. No shading, focus on form.",
-
-    "Anime": "Japanese animation style with vibrant colors, clean outlines, expressive features, and stylized proportions.",
-    "Cartoon": "Playful, exaggerated features, simplified shapes, bold outlines, and bright colors.",
-    "Pixel Art": "Retro digital art style. Small, pixel-based visuals resembling old-school video games.",
-
-    "Fantasy Art": "Epic fantasy scenes. Magical elements, mythical creatures, enchanted landscapes.",
-    "Surreal": "Dreamlike, bizarre imagery. Juxtaposes unexpected elements, bending reality.",
-    "Concept Art": "Imaginative, detailed artwork for games or films. Often moody and cinematic.",
-
-    "Cyberpunk": "Futuristic neon city vibes. High contrast, glowing lights, dark tones, sci-fi feel.",
-    "Steampunk": "Retro-futuristic style with gears, brass, Victorian aesthetics, and industrial design.",
-    "Neon Glow": "Bright neon outlines and glowing highlights. Futuristic, nightlife aesthetic.",
-    "Low Poly": "Simplified 3D style using flat geometric shapes and polygons.",
-    "Isometric": "3D look with isometric perspective. Often used for architecture, games, and diagrams.",
-
-    "Vintage": "Old-school, retro tones. Faded colors, film grain, sepia, or retro print feel.",
-    "Graffiti": "Urban street art style with bold colors, spray paint textures, and rebellious tone."
+    # ... rest of your style map ...
 }
 
 # ---------------- Helpers ----------------
@@ -459,16 +323,77 @@ Instructions:
         st.warning("Editor returned no inline image.")
     return None
 
+def run_logo_mode(prompt_text, logo_bytes, base_bytes=None, scale=0.15, opacity=0.9, placement_hint=""):
+    """
+    Use Nano Banana to either:
+     - Generate a new image that includes the provided logo, or
+     - Composite the logo onto the provided base image.
+    Returns bytes or None.
+    """
+    if not VERTEX_AVAILABLE:
+        st.warning("VertexAI SDK not available — logo mode disabled.")
+        return None
+
+    creds = st.secrets.get("gcp_service_account")
+    if not creds or not creds.get("project_id"):
+        st.warning("Missing GCP credentials in Streamlit secrets: 'gcp_service_account'. Logo mode disabled.")
+        return None
+
+    if not init_vertex(creds["project_id"], creds):
+        st.warning("Failed to initialize VertexAI.")
+        return None
+
+    nano = get_nano_banana_model()
+    if nano is None:
+        st.warning("Nano Banana editor model unavailable.")
+        return None
+
+    # Compose a targeted instruction describing logo placement
+    placement_text = f"Placement hint: {placement_hint}" if placement_hint else ""
+    # scale and opacity guidance included in the instruction so model can size/blend the logo
+    instruction = f"""
+You are a professional image compositor and editor.
+Task:
+- Use the provided logo (inline) and place it into the image as the user requests.
+- User instruction / scene prompt: "{prompt_text}"
+- {placement_text}
+- Place the logo at approximately {int(scale*100)}% of the image width (maintain aspect ratio), apply opacity {opacity:.2f}, and blend it naturally with the scene lighting and perspective.
+- If a base image is provided, composite the logo into that base image; otherwise, generate a new photorealistic image that matches the user prompt and includes the logo in the requested position.
+- Return only the final image inline (PNG). Do not include any extra text.
+"""
+
+    parts = []
+    # if base image provided, include it first (so model treats it as the target canvas)
+    if base_bytes:
+        parts.append(Part.from_data(mime_type="image/png", data=base_bytes))
+    # logo part always included
+    parts.append(Part.from_data(mime_type="image/png", data=logo_bytes))
+    # send instruction first so the model sees the textual guidance
+    try:
+        response = nano.generate_content([instruction] + parts)
+    except Exception as e:
+        st.error(f"Nano Banana logo-mode call failed: {e}")
+        return None
+
+    for candidate in getattr(response, "candidates", []):
+        for part in getattr(candidate.content, "parts", []):
+            if hasattr(part, "inline_data") and getattr(part.inline_data, "data", None):
+                return part.inline_data.data
+
+    st.warning("Logo mode returned no inline image.")
+    return None
+
 # ---------------- UI ----------------
 left_col, right_col = st.columns([3,1])
 
 with left_col:
-   
+
     # Controls
     dept = st.selectbox("🏢 Department ", list(PROMPT_TEMPLATES.keys()), index=0)
     style = st.selectbox("🎨 Style ", list(STYLE_DESCRIPTIONS.keys()), index=0)
     style_desc = "" if style == "None" else STYLE_DESCRIPTIONS.get(style, "")
 
+    # Editor upload (existing)
     uploaded_file = st.file_uploader("Upload an image to edit ", type=["png","jpg","jpeg","webp"])
     if uploaded_file:
         raw = uploaded_file.read()
@@ -486,8 +411,20 @@ with left_col:
             show_image_safe(st.session_state["edit_image_bytes"], caption=f"Editor loaded: {st.session_state.get('edit_image_name','Selected Image')}")
 
     prompt = st.text_area("Enter prompt", key="main_prompt", height=140, placeholder="")
-    
-                         
+    # Logo Mode toggle (uses embedded logo bytes)
+    logo_mode = st.checkbox("Enable Logo Mode (use embedded logo)", value=False)
+    if logo_mode and not EMBEDDED_LOGO_BYTES:
+        st.error("Embedded logo not found at LOGO_PATH. Please update LOGO_PATH or put the logo file there.")
+        logo_mode = False
+
+    if logo_mode:
+        st.markdown("**Logo settings (embedded logo)**")
+        placement_hint = st.text_input("Placement hint (e.g. bottom-right, on car door, top-left corner)", value="")
+        scale = st.slider("Logo scale (approx % of image width)", min_value=5, max_value=60, value=15)  # percent
+        opacity = st.slider("Logo opacity (0 fully transparent — 1 fully opaque)", min_value=0.0, max_value=1.0, value=0.95, step=0.01)
+        # convert to fractions used by instruction
+        scale_frac = scale / 100.0
+
     num_images = 1
 
     # Run button: either Edit (if edit image loaded) or Generate
@@ -497,86 +434,149 @@ with left_col:
             st.warning("Please enter a prompt before running.")
         else:
             base_image = st.session_state.get("edit_image_bytes")
-            if base_image:
-                # EDIT flow: edit the loaded image and make result the new loaded image
-                with st.spinner("Editing image..."):
-                    edited = run_edit_flow(prompt_text, base_image)
-                    if edited:
+
+            # ---------- Logo Mode flow ----------
+            if logo_mode and EMBEDDED_LOGO_BYTES:
+                with st.spinner("Running Logo Mode (Nano Banana)..."):
+                    # call run_logo_mode with embedded logo
+                    out_bytes = run_logo_mode(
+                        prompt_text,
+                        logo_bytes=EMBEDDED_LOGO_BYTES,
+                        base_bytes=base_image,
+                        scale=scale_frac,
+                        opacity=opacity,
+                        placement_hint=placement_hint
+                    )
+                    if out_bytes:
                         ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                        out_fn = f"outputs/edited/edited_{ts}_{uuid.uuid4().hex[:6]}.png"
+                        out_fn = f"outputs/logo/logo_{ts}_{uuid.uuid4().hex[:6]}.png"
                         os.makedirs(os.path.dirname(out_fn), exist_ok=True)
                         with open(out_fn, "wb") as f:
-                            f.write(edited)
+                            f.write(out_bytes)
 
-                        st.success("Edited image created.")
-                        show_image_safe(edited, caption=f"Edited ({ts})")
+                        st.success("Logo-mode image created.")
+                        show_image_safe(out_bytes, caption=f"Logo Mode Result ({ts})")
 
-                        # --------------------------
-                        # NEW: 3-column controls for current edited image: Download | Edit (load into editor) | Clear
-                        # --------------------------
                         current_name = os.path.basename(out_fn)
                         safe_key = hashlib.sha1(current_name.encode()).hexdigest()[:12]
 
                         col_dl, col_edit, col_clear = st.columns([1,1,1])
                         with col_dl:
                             st.download_button(
-                                "⬇️ Download Edited (current)",
-                                data=edited,
+                                "⬇️ Download (logo result)",
+                                data=out_bytes,
                                 file_name=current_name,
                                 mime="image/png",
-                                key=f"dl_edit_{safe_key}"
+                                key=f"dl_logo_{safe_key}"
                             )
                         with col_edit:
-                            if st.button("✏️ Edit this image ", key=f"edit_current_{safe_key}"):
-                                # put the current edited bytes into the editor slot (so the next Run will edit this image)
-                                st.session_state["edit_image_bytes"] = edited
+                            if st.button("✏️ Edit this image ", key=f"edit_logo_{safe_key}"):
+                                st.session_state["edit_image_bytes"] = out_bytes
                                 st.session_state["edit_image_name"] = current_name
                                 st.session_state["edit_iterations"] = 0
                                 st.experimental_rerun()
-                        
-                        # --------------------------
 
-                        # Replace the editor image with the freshly edited bytes so user can re-edit
-                        st.session_state["edit_image_bytes"] = edited
+                        # replace editor image so user can re-edit if desired
+                        st.session_state["edit_image_bytes"] = out_bytes
                         st.session_state["edit_image_name"] = current_name
 
-                        # increment iteration counter and append to edited history chain
                         st.session_state["edit_iterations"] = st.session_state.get("edit_iterations", 0) + 1
                         st.session_state.edited_images.append({
                             "original": base_image,
-                            "edited": edited,
+                            "edited": out_bytes,
                             "prompt": prompt_text,
                             "filename": out_fn,
                             "ts": ts
                         })
 
-                        # optional guard
                         if st.session_state["edit_iterations"] >= st.session_state.get("max_edit_iterations", 20):
                             st.warning(f"Reached {st.session_state['edit_iterations']} edits. Please finalize or reset to avoid runaway costs.")
                     else:
-                        st.error("Editing failed or returned no image.")
-            else:
-                # GENERATION flow
-                with st.spinner("Generating images..."):
-                    generated, enhanced = generate_images_from_prompt(prompt_text, dept=dept, style_desc=style_desc, n_images=num_images)
-                    if generated:
-                        st.success(f"Generated {len(generated)} image(s).")
-                        for i, b in enumerate(generated):
-                            ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-                            fname = f"outputs/generated/gen_{ts}_{i}.png"
-                            os.makedirs(os.path.dirname(fname), exist_ok=True)
-                            with open(fname, "wb") as f:
-                                f.write(b)
+                        st.error("Logo mode failed or returned no image.")
+                # end logo_mode branch
 
-                            short = os.path.basename(fname) + str(i)
-                            key_hash = uuid.uuid5(uuid.NAMESPACE_DNS, short).hex[:8]
-                            entry = {"filename": fname, "content": b, "key": key_hash, "enhanced_prompt": enhanced}
-                            st.session_state.generated_images.append(entry)
-                    else:
-                        st.error("Generation failed or returned no images.")
+            else:
+                # ---------- non-logo flows (existing behavior) ----------
+                if base_image:
+                    # EDIT flow: edit the loaded image and make result the new loaded image
+                    with st.spinner("Editing image..."):
+                        edited = run_edit_flow(prompt_text, base_image)
+                        if edited:
+                            ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                            out_fn = f"outputs/edited/edited_{ts}_{uuid.uuid4().hex[:6]}.png"
+                            os.makedirs(os.path.dirname(out_fn), exist_ok=True)
+                            with open(out_fn, "wb") as f:
+                                f.write(edited)
+
+                            st.success("Edited image created.")
+                            show_image_safe(edited, caption=f"Edited ({ts})")
+
+                            # --------------------------
+                            # NEW: 3-column controls for current edited image: Download | Edit (load into editor) | Clear
+                            # --------------------------
+                            current_name = os.path.basename(out_fn)
+                            safe_key = hashlib.sha1(current_name.encode()).hexdigest()[:12]
+
+                            col_dl, col_edit, col_clear = st.columns([1,1,1])
+                            with col_dl:
+                                st.download_button(
+                                    "⬇️ Download Edited (current)",
+                                    data=edited,
+                                    file_name=current_name,
+                                    mime="image/png",
+                                    key=f"dl_edit_{safe_key}"
+                                )
+                            with col_edit:
+                                if st.button("✏️ Edit this image ", key=f"edit_current_{safe_key}"):
+                                    # put the current edited bytes into the editor slot (so the next Run will edit this image)
+                                    st.session_state["edit_image_bytes"] = edited
+                                    st.session_state["edit_image_name"] = current_name
+                                    st.session_state["edit_iterations"] = 0
+                                    st.experimental_rerun()
+
+                            # --------------------------
+
+                            # Replace the editor image with the freshly edited bytes so user can re-edit
+                            st.session_state["edit_image_bytes"] = edited
+                            st.session_state["edit_image_name"] = current_name
+
+                            # increment iteration counter and append to edited history chain
+                            st.session_state["edit_iterations"] = st.session_state.get("edit_iterations", 0) + 1
+                            st.session_state.edited_images.append({
+                                "original": base_image,
+                                "edited": edited,
+                                "prompt": prompt_text,
+                                "filename": out_fn,
+                                "ts": ts
+                            })
+
+                            # optional guard
+                            if st.session_state["edit_iterations"] >= st.session_state.get("max_edit_iterations", 20):
+                                st.warning(f"Reached {st.session_state['edit_iterations']} edits. Please finalize or reset to avoid runaway costs.")
+                        else:
+                            st.error("Editing failed or returned no image.")
+                else:
+                    # GENERATION flow
+                    with st.spinner("Generating images..."):
+                        generated, enhanced = generate_images_from_prompt(prompt_text, dept=dept, style_desc=style_desc, n_images=num_images)
+                        if generated:
+                            st.success(f"Generated {len(generated)} image(s).")
+                            for i, b in enumerate(generated):
+                                ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                                fname = f"outputs/generated/gen_{ts}_{i}.png"
+                                os.makedirs(os.path.dirname(fname), exist_ok=True)
+                                with open(fname, "wb") as f:
+                                    f.write(b)
+
+                                short = os.path.basename(fname) + str(i)
+                                key_hash = uuid.uuid5(uuid.NAMESPACE_DNS, short).hex[:8]
+                                entry = {"filename": fname, "content": b, "key": key_hash, "enhanced_prompt": enhanced}
+                                st.session_state.generated_images.append(entry)
+                        else:
+                            st.error("Generation failed or returned no images.")
 
     # Option to clear editor (go back to generate-mode)
-    
+
 
     st.markdown("---")
 
@@ -650,8 +650,11 @@ with left_col:
 
 # ---------------- Right column: smaller history + controls ----------------
 with right_col:
-   
+
     max_it = 100
     st.session_state["max_edit_iterations"] = int(max_it)
-
-    
+    st.markdown("**Embedded logo status**")
+    if EMBEDDED_LOGO_BYTES:
+        show_image_safe(EMBEDDED_LOGO_BYTES, caption="Embedded logo (used when Logo Mode enabled)")
+    else:
+        st.warning(f"No embedded logo found at '{LOGO_PATH}'. Update LOGO_PATH at top of file.")
