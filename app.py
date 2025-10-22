@@ -349,7 +349,7 @@ def run_logo_mode(prompt_text, logo_bytes, base_bytes=None, scale=0.15, opacity=
         return None
 
     # Compose a targeted instruction describing logo placement
-    placement_text = f"Placement hint: {placement_hint}" if placement_hint else ""
+    
     # scale and opacity guidance included in the instruction so model can size/blend the logo
     instruction = f"""
 You are a professional image compositor and editor.
