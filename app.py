@@ -557,7 +557,7 @@ with left_col:
     if logo_mode:
         st.markdown("Logo")
         placement_hint = st.text_input("Placement (top-left, top-right, bottom-left, bottom-right, center)", value="bottom-right")
-        scale_percent = st.slider("Logo size (% of image width)", min_value=2, max_value=20, value=8)
+        scale_percent = 20
         opacity = 1
         scale_frac = scale_percent / 100.0
                          
